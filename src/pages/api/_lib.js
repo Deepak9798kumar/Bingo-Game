@@ -15,17 +15,41 @@ const redis = new Redis({
 });
 
 export async function saveRoom(roomId, roomObj) {
-  await redis.set(`rooms:${roomId}`, JSON.stringify(roomObj));
+  try {
+    const key = `rooms:${roomId}`;
+    const v = JSON.stringify(roomObj);
+    const res = await redis.set(key, v);
+    console.log(`[upstash] set ${key} -> ${res}`);
+    return res;
+  } catch (err) {
+    console.error('[upstash] saveRoom error', err?.message || err);
+    throw err;
+  }
 }
 
 export async function loadRoom(roomId) {
-  const v = await redis.get(`rooms:${roomId}`);
-  if (!v) return null;
-  try { return JSON.parse(v); } catch (e) { return null; }
+  try {
+    const key = `rooms:${roomId}`;
+    const v = await redis.get(key);
+    console.log(`[upstash] get ${key} ->`, v ? '(value)' : '(null)');
+    if (!v) return null;
+    try { return JSON.parse(v); } catch (e) { console.error('[upstash] parse error', e); return null; }
+  } catch (err) {
+    console.error('[upstash] loadRoom error', err?.message || err);
+    throw err;
+  }
 }
 
 export async function delRoom(roomId) {
-  await redis.del(`rooms:${roomId}`);
+  try {
+    const key = `rooms:${roomId}`;
+    const res = await redis.del(key);
+    console.log(`[upstash] del ${key} -> ${res}`);
+    return res;
+  } catch (err) {
+    console.error('[upstash] delRoom error', err?.message || err);
+    throw err;
+  }
 }
 
 export { pusher, redis };
