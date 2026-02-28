@@ -1,0 +1,72 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  font-size: 16px;
+}
+
+body {
+  background-color: #080D1A;
+  color: #E8EDF5;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100dvh;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1E2D4A; border-radius: 4px; }
+
+/* ── Input reset ────────────────────────────────────────────────────────── */
+input { outline: none; }
+input:focus { outline: none; }
+button { -webkit-tap-highlight-color: transparent; }
+
+/* ── Glass card ─────────────────────────────────────────────────────────── */
+@layer components {
+  .glass {
+    background: rgba(15, 22, 41, 0.75);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+  }
+  .glass-dark {
+    background: rgba(8, 13, 26, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px;
+  }
+  .brand-pill {
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+/* ── Page bg ────────────────────────────────────────────────────────────── */
+.page-bg {
+  background: radial-gradient(ellipse 90% 55% at 50% -5%, #1C2A5E 0%, #080D1A 60%);
+}
+
+/* ── Confetti particle ──────────────────────────────────────────────────── */
+.confetti-piece {
+  position: fixed;
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  animation: confettiFall 2s ease-in forwards;
+  z-index: 9999;
+  pointer-events: none;
+}
