@@ -7,7 +7,7 @@ export default function GameControls({
   return (
     <div className="flex gap-2">
       {/* Start — host only, pre-game */}
-      {isHost && !gameStarted && (
+         {isHost && (!gameStarted || gameFinished) && (
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={onStart}

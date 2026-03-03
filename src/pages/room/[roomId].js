@@ -143,6 +143,12 @@ export default function RoomPage() {
       }));
     }));
 
+    // intermediate player win (do NOT end the game)
+    unsubs.push(on("player_won", ({ playerId, playerName }) => {
+      showToast(`${playerName} got BINGO!`);
+      setPlayers((prev) => prev.map((p) => p.id === playerId ? { ...p, hasWon: true } : p));
+    }));
+
     unsubs.push(on("game_ended", ({ message }) => {
       setGameFinished(true);
       showToast(message);

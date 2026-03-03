@@ -24,14 +24,35 @@ export default async function handler(req, res) {
     playerUpdates.push({ id: player.id, bingoCount: player.bingoCount, hasWon: player.hasWon });
   }
 
+  // advance turn
   room.currentTurnIndex = (room.currentTurnIndex + 1) % room.players.length;
   const nextPlayer = room.players[room.currentTurnIndex];
 
+  // determine how many players have won so far
+  const winnersCount = room.players.filter((p) => p.hasWon).length;
+
+  // If this call created a winner, decide whether to finish the game or continue.
+  // New behaviour: DO NOT end the game on the first bingo. Allow play to continue
+  // until either (a) all but one player have won, or (b) the numbers are exhausted.
   if (winner) {
-    room.finished = true;
-    room.winnerId = winner.id;
-    room.winnerName = winner.name;
-    try { await pusher.trigger(`room-${roomId}`, 'game_over', { winnerId: winner.id, winnerName: winner.name, calledNumbers: room.calledNumbers, playerUpdates }); } catch (e) {}
+    const isFinal = winnersCount >= Math.max(0, room.players.length - 1) || room.calledNumbers.length >= 75;
+    if (isFinal) {
+      room.finished = true;
+      room.winnerId = winner.id;
+      room.winnerName = winner.name;
+      try {
+        await pusher.trigger(`room-${roomId}`, 'game_over', { winnerId: winner.id, winnerName: winner.name, calledNumbers: room.calledNumbers, playerUpdates });
+      } catch (e) {}
+    } else {
+      // announce the number as usual (updates include hasWon for the player)
+      try {
+        await pusher.trigger(`room-${roomId}`, 'number_called', { number, calledNumbers: room.calledNumbers, callerName: currentPlayer.name, nextTurnPlayerId: nextPlayer.id, nextTurnPlayerName: nextPlayer.name, playerUpdates });
+      } catch (e) {}
+      // also notify the room that someone achieved bingo (clients can show a toast/indicator)
+      try {
+        await pusher.trigger(`room-${roomId}`, 'player_won', { playerId: winner.id, playerName: winner.name });
+      } catch (e) {}
+    }
   } else {
     try { await pusher.trigger(`room-${roomId}`, 'number_called', { number, calledNumbers: room.calledNumbers, callerName: currentPlayer.name, nextTurnPlayerId: nextPlayer.id, nextTurnPlayerName: nextPlayer.name, playerUpdates }); } catch (e) {}
   }
