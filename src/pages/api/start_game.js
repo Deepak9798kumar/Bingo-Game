@@ -40,5 +40,12 @@ export default async function handler(req, res) {
     );
   } catch (e) {}
 
+  // send each player their new board and initial state
+  for (const p of room.players) {
+    try {
+      await pusher.trigger(`player-${p.id}`, 'board_update', { board: p.board, markedNumbers: p.markedNumbers, lines: p.lines, bingoCount: p.bingoCount });
+    } catch (e) {}
+  }
+
   res.status(200).json({ success: true });
 }

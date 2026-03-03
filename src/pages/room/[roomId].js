@@ -126,7 +126,11 @@ export default function RoomPage() {
       }));
     }));
 
-    unsubs.push(on("board_update", ({ markedNumbers: mn, lines: ln, bingoCount: bc }) => {
+    unsubs.push(on("board_update", ({ board: newBoard, markedNumbers: mn, lines: ln, bingoCount: bc }) => {
+      if (Array.isArray(newBoard) && newBoard.length === 25) {
+        setMyBoard(newBoard);
+        try { sessionStorage.setItem("bingo_board", JSON.stringify(newBoard)); } catch (e) {}
+      }
       setMarkedNumbers(mn);
       setLines(ln);
       setBingoCount(bc);
