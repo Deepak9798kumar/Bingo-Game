@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   if (!room) return res.status(200).json({ success: false, error: 'Room not found.' });
   if (room.hostId !== playerId) return res.status(200).json({ success: false, error: 'Only host can start the game.' });
   if (room.players.length < 2) return res.status(200).json({ success: false, error: 'Need at least 2 players.' });
-  // Reset room state for a fresh game so the same room can be reused.
+ 
   room.started = true;
   room.finished = false;
   room.currentTurnIndex = 0;

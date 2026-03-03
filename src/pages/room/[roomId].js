@@ -148,9 +148,20 @@ export default function RoomPage() {
     }));
 
     // intermediate player win (do NOT end the game)
-    unsubs.push(on("player_won", ({ playerId, playerName }) => {
+    unsubs.push(on("player_won", ({ playerId, playerName, calledNumbers: called, playerUpdates }) => {
+      // show toast + modal for the winner
       showToast(`${playerName} got BINGO!`);
-      setPlayers((prev) => prev.map((p) => p.id === playerId ? { ...p, hasWon: true } : p));
+      setWinnerInfo({ id: playerId, name: playerName });
+      setShowModal(true);
+      if (Array.isArray(called)) setCalledNumbers(called);
+      if (Array.isArray(playerUpdates)) {
+        setPlayers((prev) => prev.map((p) => {
+          const u = playerUpdates.find((x) => x.id === p.id);
+          return u ? { ...p, bingoCount: u.bingoCount, hasWon: u.hasWon } : p;
+        }));
+      } else {
+        setPlayers((prev) => prev.map((p) => p.id === playerId ? { ...p, hasWon: true } : p));
+      }
     }));
 
     unsubs.push(on("game_ended", ({ message }) => {

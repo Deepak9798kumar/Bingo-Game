@@ -48,9 +48,9 @@ export default async function handler(req, res) {
       try {
         await pusher.trigger(`room-${roomId}`, 'number_called', { number, calledNumbers: room.calledNumbers, callerName: currentPlayer.name, nextTurnPlayerId: nextPlayer.id, nextTurnPlayerName: nextPlayer.name, playerUpdates });
       } catch (e) {}
-      // also notify the room that someone achieved bingo (clients can show a toast/indicator)
+      // also notify the room that someone achieved bingo (clients can show a toast/indicator and sync state)
       try {
-        await pusher.trigger(`room-${roomId}`, 'player_won', { playerId: winner.id, playerName: winner.name });
+        await pusher.trigger(`room-${roomId}`, 'player_won', { playerId: winner.id, playerName: winner.name, calledNumbers: room.calledNumbers, playerUpdates });
       } catch (e) {}
     }
   } else {
