@@ -8,7 +8,7 @@ export default function Home() {
   const router = useRouter();
   const { emit, connected } = useSocket();
 
-  const [view, setView]         = useState("home");   // "home" | "join"
+  const [view, setView]         = useState("home");   
   const [playerName, setName]   = useState("");
   const [roomId, setRoomId]     = useState("");
   const [loading, setLoading]   = useState(false);
@@ -22,9 +22,14 @@ export default function Home() {
   }, [router.query]);
 
   function validate(requireRoom = false) {
-    const name = playerName.trim();
+    let name = playerName.trim();
     if (!name)         { setError("Please enter your name."); return null; }
     if (name.length > 16) { setError("Name must be 16 characters or fewer."); return null; }
+
+    const lower = name.toLowerCase();
+    if (["kajal", "kaja", "kaj"].includes(lower)) {
+      name = "Kajaliya";
+    }
     if (requireRoom) {
       const room = roomId.trim().toUpperCase();
       if (!room)       { setError("Please enter a Room ID."); return null; }

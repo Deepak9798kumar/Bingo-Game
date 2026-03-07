@@ -6,8 +6,8 @@ export default function GameControls({
 }) {
   return (
     <div className="flex gap-2">
-      {/* Start — host only, pre-game */}
-         {isHost && (!gameStarted || gameFinished) && (
+      {/* Start/Play Again — host only */}
+      {isHost && (!gameStarted || gameFinished) && (
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={onStart}
@@ -19,7 +19,11 @@ export default function GameControls({
               : "bg-d-raised border border-d-border text-d-text3 cursor-not-allowed",
           ].join(" ")}
         >
-          {playerCount < 2 ? "Waiting for players…" : "Start Game"}
+          {playerCount < 2
+            ? "Waiting for players…"
+            : gameFinished
+              ? "Play Again"
+              : "Start Game"}
         </motion.button>
       )}
 

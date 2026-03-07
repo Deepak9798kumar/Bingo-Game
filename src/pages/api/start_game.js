@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   room.winnerId = null;
   room.winnerName = null;
 
-  // Reset per-player state and generate fresh boards
+  
   room.players = room.players.map((p) => ({
     ...p,
     board: generateBoard(),

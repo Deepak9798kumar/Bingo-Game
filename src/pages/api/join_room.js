@@ -7,12 +7,17 @@ export default async function handler(req, res) {
   const { playerName, roomId } = req.body || {};
   const room = await loadRoom(roomId);
   if (!room) return res.status(200).json({ success: false, error: 'Room not found.' });
-  // allow joining if game is not actively in-progress
-  // (permit joining when a previous game finished so players can re-use the room)
+  
   if (room.started && !room.finished) return res.status(200).json({ success: false, error: 'Game already started.' });
   if (room.players.length >= 6) return res.status(200).json({ success: false, error: 'Room is full (max 6 players).' });
-  if (room.players.find((p) => p.name === playerName)) return res.status(200).json({ success: false, error: 'Name already taken in this room.' });
 
+  
+  const existingPlayer = room.players.find((p) => p.name === playerName);
+  if (existingPlayer) {
+    return res.status(200).json({ success: true, roomId, playerId: existingPlayer.id, board: existingPlayer.board });
+  }
+
+  
   const playerId = uuidv4();
   const newPlayer = { id: playerId, name: playerName, board: generateBoard(), markedNumbers: [], lines: [], bingoCount: 0, hasWon: false };
   room.players.push(newPlayer);

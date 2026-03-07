@@ -33,20 +33,20 @@ export async function loadRoom(roomId) {
     const v = await redis.get(key);
     console.log(`[upstash] get ${key} ->`, v ?? '(null)');
     if (v == null) return null;
-    // Handle different return shapes from the Upstash client (string or object)
+    
     if (typeof v === 'string') {
       try { return JSON.parse(v); } catch (e) { console.error('[upstash] parse error', e); return null; }
     }
     if (typeof v === 'object') {
-      // common Upstash shapes: { value: '...'} or { result: '...'} or direct parsed object
+      
       const candidate = v.value ?? v.result ?? v.data ?? null;
       if (candidate && typeof candidate === 'string') {
         try { return JSON.parse(candidate); } catch (e) { console.error('[upstash] parse error (candidate)', e); }
       }
-      // If it's already an object (stored via client.set without stringifying), return it directly
+     
       return v;
     }
-    // Unknown type
+   
     console.error('[upstash] unexpected get type', typeof v, v);
     return null;
   } catch (err) {

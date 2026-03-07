@@ -93,7 +93,6 @@ export default function RoomPage() {
     if (!hostId && players.length > 0) setHostId(players[0].id);
   }, [players, hostId]);
 
-  // â”€â”€ Socket events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (!roomId) return;
     const unsubs = [];
@@ -106,6 +105,7 @@ export default function RoomPage() {
 
     unsubs.push(on("game_started", ({ currentTurnPlayerId, currentTurnPlayerName, playerList }) => {
       setGameStarted(true);
+      setGameFinished(false); // Reset finished state for Play Again
       setCurrentTurnId(currentTurnPlayerId);
       setCurrentTurnName(currentTurnPlayerName);
       setPlayers(playerList);
@@ -147,9 +147,9 @@ export default function RoomPage() {
       }));
     }));
 
-    // intermediate player win (do NOT end the game)
+   
     unsubs.push(on("player_won", ({ playerId, playerName, calledNumbers: called, playerUpdates }) => {
-      // show toast + modal for the winner
+     
       showToast(`${playerName} got BINGO!`);
       setWinnerInfo({ id: playerId, name: playerName });
       setShowModal(true);
@@ -185,13 +185,13 @@ export default function RoomPage() {
     return () => unsubs.forEach((fn) => typeof fn === "function" && fn());
   }, [roomId, on, showToast, clientInfo?.playerId, myId]);
 
-  // â”€â”€ Derived â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  
   const effectiveHostId = hostId ?? players[0]?.id;
   
   const isHost  = effectiveHostId === myId;
   const isMyTurn = currentTurnId === myId;
 
-  // â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  
   const selectNumber = useCallback((number) => {
     if (!isMyTurn || !gameStarted || gameFinished) return;
     emit("select_number", { roomId, playerId: myId, number }, (res) => {
@@ -213,7 +213,7 @@ export default function RoomPage() {
     router.replace("/");
   }, [emit, roomId, router, myId]);
 
-  // â”€â”€ Loading state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  
   if (!myBoard.length) {
     return (
       <div className="min-h-dvh bg-canvas flex items-center justify-center">
